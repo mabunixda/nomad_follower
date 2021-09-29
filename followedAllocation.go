@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-
+	"strings"
 	nomadApi "github.com/hashicorp/nomad/api"
 )
 
@@ -41,10 +41,11 @@ func (f *FollowedAllocation) Start(save *SavedAlloc) {
 	for _, tg := range f.Alloc.Job.TaskGroups {
 		for _, task := range tg.Tasks {
 			ft := NewFollowedTask(f.Alloc, *tg.Name, task, f.Nomad, f.Quit, f.OutputChan, f.log)
-			skip := true
+			skip := (strings.TrimSpace(f.logTag) != "")
 			for _, s := range ft.logTemplate.ServiceTags {
 				if s == f.logTag {
 					skip = false
+					break
 				}
 			}
 			if !skip {
